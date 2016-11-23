@@ -7,52 +7,109 @@ PATH_TO_DATAFILES = os.path.join(
 )
 
 
+def is_csv_file(filename):
+    return filename.endswith('.csv')
+
+
+def is_a_meetings_file(filename):
+    return 'meetings' in filename
+
+
+def is_not_a_gifts_file(filename):
+    return 'gift' not in filename
+
+
+CAN_PROCESS_FILE_CHECKS = [
+    is_csv_file,
+    is_a_meetings_file,
+    is_not_a_gifts_file,
+]
+
+
+def can_process_file(filename):
+    filename_lower = filename.lower()
+    return all(check(filename_lower) for check in CAN_PROCESS_FILE_CHECKS)
+
+
+def row_is_long_enough(row, must_contain_index=2):
+    """
+    Check we have enough entries to be a data or header row.
+
+    If there's fewer than three columns this row is unlikely to be useful
+    therefore by default row[2] must exist.
+    Mostly we'd want 4 but sometimes it's meetings for XXX followed by a
+    three column version with the other details.
+    """
+    return len(row) > must_contain_index
+
+
+def header_row_contains_more_than_one_value(row):
+    """
+    Check that at least the first two columns of a header have values
+    """
+    return bool(row[1])
+
+
+def organisation_column_contains_a_value(row, organisation_column_index):
+    return bool(row[organisation_column_index])
+
+
+CAN_PROCESS_HEADER_ROW_CHECKS = [
+    row_is_long_enough,
+    header_row_contains_more_than_one_value,
+]
+
+
+CAN_PROCESS_DATA_ROW_CHECKS = [
+    row_is_long_enough,
+    organisation_column_contains_a_value,
+]
+
+
+def can_process_row(row, organisation_column_index):
+    if organisation_column_index is None:
+        return all(check(row) for check in CAN_PROCESS_HEADER_ROW_CHECKS)
+    else:
+        return all(
+            check(row, organisation_column_index)
+            for check in CAN_PROCESS_DATA_ROW_CHECKS
+        )
+
+
+def find_organisation_column_index(row):
+    for index, col in enumerate(row):
+        if 'Health' in col:
+            # Special case, there's one file where this is in the minister
+            # heading too.
+            continue
+        if 'organisation' in col.lower() or 'organization' in col.lower():
+            return index
+    return None
+
+
+def clean_organisation_string(organisation_string):
+    # Remove leading/trailing whitespace, dashes and more whitespace
+    return organisation_string.strip().strip('-').strip()
+
+
 orgs = defaultdict(lambda: 0)
 for filename in os.listdir(PATH_TO_DATAFILES):
-    filename_lower = filename.lower()
-    if not filename_lower.endswith('.csv'):
-        # Skip the file if it's not a csv
-        continue
-    if not 'meetings' in filename_lower:
-        # Skip the file if it doesn't contain a meeting of some sort
-        continue
-    if 'gift' in filename_lower:
-        # Skip the file if it also contains gift information
+    if not can_process_file(filename):
         continue
     with open(os.path.join(PATH_TO_DATAFILES, filename), 'rU') as file_handle:
         reader = csv.reader(file_handle)
-        first_row = True
         org_col = None
         for row in reader:
-            if len(row) < 3:
-                # If there's fewer than three columns this row is unlikely to be useful
-                # Mostly we'd want 4 but sometimes it's meetings for XXX followed by a
-                # three column version with the other details.
+            if not can_process_row(row, org_col):
                 continue
-            if first_row and not row[1]:
-                # If the first row isn't full of headings then skip it and treat the
-                # next as if it's a heading
-                continue
-            if first_row:
-                # When looking at the heading row, scan across to find the column with
-                # the organisations in.
-                first_row = False
-                for index, col in enumerate(row):
-                    if 'Health' in col:
-                        # Special case, there's one file where this is in the minister
-                        # heading too.
-                        continue
-                    if 'organisation' in col.lower() or 'organization' in col.lower():
-                        org_col = index
-                        break
+            if org_col is None:
+                org_col = find_organisation_column_index(row)
                 if org_col is None:
-                    # If there wasn't an 'organisation' column then skip to the next file
+                    # If there wasn't an 'organisation' column then skip to
+                    # the next file
                     break
-                continue
-            if org_col < len(row) and row[org_col]:
-                # If the current row has enough columns extract the organisation
-                # and clean it up
-                org = row[org_col].strip().strip('-').strip()
+            else:
+                org = clean_organisation_string(row[org_col])
                 if org:
                     # Increment the organisation's meeting count
                     orgs[org] += 1
