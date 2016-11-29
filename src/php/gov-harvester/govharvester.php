@@ -228,6 +228,7 @@ function docParsePage($domdoc)
 	foreach($docsections as $docsection)
 	{
 		// the array we will use to write to csv
+		// NOTE: If any of this structure changes please update the transform in metadata.py within the datapreprocessor.
 		$csvdata = array($type,$title,$organization,$collection,$datatimepublished);
 
 		// is the title a clickable link ?
