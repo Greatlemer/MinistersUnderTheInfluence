@@ -201,6 +201,7 @@ defmodule DataSanitiser.FileProcessor do
         else
           # Add an error to the stream otherwise as we don't know how to handle
           # this row.
+          IO.puts("Row #{row_index + 1} is invalid in #{file_metadata.filename}.")
           {[{:error, :invalid_row, row_index}], row_state}
         end
     end
