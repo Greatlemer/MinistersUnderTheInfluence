@@ -28,3 +28,8 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env}.exs"
+
+config :white_bread,
+  outputers: [{WhiteBread.Outputers.Console, []},
+              {WhiteBread.Outputers.HTML, path: "~/build/whitebread_report.html"}
+             ]

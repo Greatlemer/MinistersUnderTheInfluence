@@ -19,7 +19,7 @@ defmodule DataSanitiser.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger],
+    [applications: [:logger, :white_bread],
      mod: {DataSanitiser, []}]
   end
 
@@ -33,7 +33,8 @@ defmodule DataSanitiser.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:nimble_csv, "0.1.1"}]
+    [{:nimble_csv, "0.1.1"},
+     {:white_bread, "~> 3.1"}]
   end
 
   defp escript_config do
