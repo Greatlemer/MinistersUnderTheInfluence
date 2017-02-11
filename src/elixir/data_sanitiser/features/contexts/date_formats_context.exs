@@ -13,7 +13,7 @@ defmodule DateFormatsContext do
     }
   end
 
-  given_ ~r/^a default year of (?<default_year>\d{4})$/,
+  given_ ~r/^a default year of (?<default_year>\d{4}|nil)$/,
   fn state, %{default_year: default_year} ->
     {
       :ok,

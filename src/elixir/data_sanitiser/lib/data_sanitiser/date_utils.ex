@@ -152,7 +152,7 @@ defmodule DataSanitiser.DateUtils do
   # The pattern must match the entire string given to it.
   @date_regex [
     "^",
-    "(?:(?<day>\\d?\\d)?[-/ ])??",
+    "(?:(?<day>\\d?\\d)?(st|nd|rd|th)?[-/ ])??",
     "(?<month>#{Enum.join Map.keys(@recognised_months), "|"}|\\d?\\d)",
     "[-/ ]?(?<year>(19|20)?\\d\\d)?",
     "$"

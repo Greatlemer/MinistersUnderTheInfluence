@@ -60,3 +60,16 @@ Feature: Format dates in a variety of formats
       | 10 May 72   | 10  | 5     | 1972 |
       | 5/Nov/2006  | 5   | 11    | 2006 |
       | 1-1-01      | 1   | 1     | 2001 |
+
+   Scenario Outline: Any dates with a day featuring an ordinal indicator
+    Given the string "<date_string>" to represent a date
+      And a default year of <default_year>
+    When that string is parsed
+    Then we get "<day>", "<month>", "<year>" extracted from it
+
+    Examples:
+      | date_string      | day | month | year | default_year |
+      | 11th 01          | 11  | 1     | 1901 | 1901         |
+      | 1st May 09       | 1   | 5     | 2009 | 2005         |
+      | 2nd June         | 2   | 6     | nil  | nil          |
+      | 23rd August 1973 | 23  | 8     | 1973 | nil          |
