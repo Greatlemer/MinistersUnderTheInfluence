@@ -60,3 +60,16 @@ Feature: Parse Data Layouts
       """
       1,Perm Sec,,Transparency Office,02-01-1995,02-01-1995,British Telecom,,It's good to talk,0,Transparent.csv,1
       """
+
+  Scenario: Process Four Column, No Preamble, Date Heading is "Month"
+    Given a data file named "Transparent.csv" from the "Transparency Office" containing
+      """
+      Permanent Secretary,Month,External Organisation,Reason
+      Perm Sec,June,British Telecom,It's good to talk
+      """
+      And a default year for the file of 1999
+    When the file is processed
+    Then the cleaned output should be
+      """
+      1,Perm Sec,,Transparency Office,06-1999,06-1999,British Telecom,,It's good to talk,0,Transparent.csv,1
+      """

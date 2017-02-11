@@ -26,6 +26,7 @@ defmodule DataSanitiser.FileProcessor do
     "special advisor" => :minister,
     "permanent secretary" => :minister,
     "date" => :date,
+    "month" => :date,
     "reason" => :reason,
     "purpose" => :reason
   }

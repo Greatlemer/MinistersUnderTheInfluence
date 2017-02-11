@@ -14,10 +14,19 @@ defmodule DataLayoutsContext do
     {:ok, new_state}
   end
 
+  given_ ~r/^a default year for the file of (?<year>\d{4})$/,
+  fn state, %{year: year} ->
+    {
+      :ok,
+      Map.put(state, :default_year, String.to_integer(year))
+    }
+  end
+
   when_ ~r/^the file is processed$/,
   fn state ->
     file_metadata = new_file_metadata filename: state.file_name,
-                                      department: state.office_name
+                                      department: state.office_name,
+                                      year: Map.get(state, :default_year)
     cleaned_data = state.file_contents
       |> parse_and_clean_rows(file_metadata)
       |> convert_to_csv_output(file_metadata)
