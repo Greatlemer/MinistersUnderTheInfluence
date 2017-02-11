@@ -40,8 +40,8 @@ Feature: Parse Data Layouts
   Scenario: Process Four Column, No Preamble, Minister Heading is "Special Advisor"
     Given a data file named "Transparent.csv" from the "Transparency Office" containing
       """
-      Special Advisor,Date,External Organisation,Reason
-      An Advisor,02 Jan 1995,British Telecom,It's good to talk
+      Date,Special Advisor,External Organisation,Reason
+      02 Jan 1995,An Advisor,British Telecom,It's good to talk
       """
     When the file is processed
     Then the cleaned output should be
