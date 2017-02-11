@@ -38,6 +38,11 @@ To run the tests just use:
   mix test
   ```
 
+To run the feature tests use:
+  ```bash
+  mix white_bread.run
+  ```
+
 ## Style conventions
 The code tries to follow the style guide at
 https://github.com/christopheradams/elixir_style_guide
