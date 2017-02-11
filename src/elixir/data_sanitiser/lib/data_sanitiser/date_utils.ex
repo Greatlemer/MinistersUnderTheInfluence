@@ -151,7 +151,7 @@ defmodule DataSanitiser.DateUtils do
   #   with 19 or 20.
   # The pattern must match the entire string given to it.
   @date_regex [
-    "^",
+    "^[. ]*",
     "(?:(?<day>\\d?\\d)?(st|nd|rd|th)?[-/ ])??",
     "(?<month>#{Enum.join Map.keys(@recognised_months), "|"}|\\d?\\d)",
     "[-/ ]?(?<year>(19|20)?\\d\\d)?",

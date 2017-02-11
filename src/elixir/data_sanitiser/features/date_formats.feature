@@ -73,3 +73,13 @@ Feature: Format dates in a variety of formats
       | 1st May 09       | 1   | 5     | 2009 | 2005         |
       | 2nd June         | 2   | 6     | nil  | nil          |
       | 23rd August 1973 | 23  | 8     | 1973 | nil          |
+
+   Scenario Outline: Any dates with random stray punctuation at the start
+    Given the string " <date_string>" to represent a date
+    When that string is parsed
+    Then we get "<day>", "<month>", "<year>" extracted from it
+
+    Examples:
+      | date_string      | day | month | year |
+      | . 11th 01        | 11  | 1     | nil  |
+      | 10/02/2001       | 10  | 2     | 2001 |
