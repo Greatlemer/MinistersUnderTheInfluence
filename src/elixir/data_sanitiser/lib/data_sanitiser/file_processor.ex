@@ -212,7 +212,16 @@ defmodule DataSanitiser.FileProcessor do
           {[String.t], non_neg_integer}
         ) :: [:atom]
   defp meeting_data_positions_from_header({header_row, _}) do
-    Enum.map header_row, &(extract_column_type String.trim(&1))
+    case Enum.map header_row, &(extract_column_type String.trim(&1)) do
+      [:empty | tail] ->
+        if Enum.any?(tail, &(:minister == &1)) do
+          [:empty | tail]
+        else
+          [:minister | tail]
+        end
+      list ->
+        list
+    end
   end
 
 
