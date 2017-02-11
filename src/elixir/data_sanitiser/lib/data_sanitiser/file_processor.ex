@@ -22,6 +22,9 @@ defmodule DataSanitiser.FileProcessor do
   @header_types %{
     "organisation" => :organisations,
     "minister" => :minister,
+    "spad" => :minister,
+    "special advisor" => :minister,
+    "permanent secretary" => :minister,
     "date" => :date,
     "reason" => :reason,
     "purpose" => :reason
