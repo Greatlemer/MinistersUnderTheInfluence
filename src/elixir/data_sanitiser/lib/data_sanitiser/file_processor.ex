@@ -24,6 +24,7 @@ defmodule DataSanitiser.FileProcessor do
     "minister" => :minister,
     "spad" => :minister,
     "special advisor" => :minister,
+    "special adviser" => :minister,
     "permanent secretary" => :minister,
     "date" => :date,
     "month" => :date,

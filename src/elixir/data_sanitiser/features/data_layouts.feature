@@ -49,6 +49,18 @@ Feature: Parse Data Layouts
       1,An Advisor,,Transparency Office,02-01-1995,02-01-1995,British Telecom,,It's good to talk,0,Transparent.csv,1
       """
 
+  Scenario: Process Four Column, No Preamble, Minister Heading is "Special Adviser"
+    Given a data file named "Transparent.csv" from the "Transparency Office" containing
+      """
+      Date,Special Adviser,External Organisation,Reason
+      02 Jan 1995,An Adviser,British Telecom,It's good to talk
+      """
+    When the file is processed
+    Then the cleaned output should be
+      """
+      1,An Adviser,,Transparency Office,02-01-1995,02-01-1995,British Telecom,,It's good to talk,0,Transparent.csv,1
+      """
+
   Scenario: Process Four Column, No Preamble, Minister Heading is "Permanent Secretary"
     Given a data file named "Transparent.csv" from the "Transparency Office" containing
       """
