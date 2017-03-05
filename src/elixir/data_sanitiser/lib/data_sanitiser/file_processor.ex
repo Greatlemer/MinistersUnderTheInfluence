@@ -38,6 +38,12 @@ defmodule DataSanitiser.FileProcessor do
     :clean_file
   ]
 
+  @required_cols [
+    :minister,
+    :organisations,
+    :reason
+  ]
+
 
   @doc """
   Read in a file, process its data and return it.
@@ -163,6 +169,24 @@ defmodule DataSanitiser.FileProcessor do
   end
 
 
+  defp get_state_from_header_data(header_data) do
+    do_get_state_from_header_data(@required_cols, header_data)
+  end
+
+
+  defp do_get_state_from_header_data([], header_data) do
+    %RowState{data_positions: header_data}
+  end
+
+  defp do_get_state_from_header_data([item|tail], header_data) do
+    if Enum.any?(header_data, &(item == &1)) do
+      do_get_state_from_header_data(tail, header_data)
+    else
+      :header
+    end
+  end
+
+
   @spec clean_meeting_row(
           {[String.t], non_neg_integer},
           :header | RowState.t,
@@ -175,7 +199,7 @@ defmodule DataSanitiser.FileProcessor do
     data_positions = meeting_data_positions_from_header row
     {
       [], # Don't add anything to the stream of row data
-      %RowState{data_positions: data_positions}
+      get_state_from_header_data(data_positions)
     }
   end
 

@@ -85,3 +85,17 @@ Feature: Parse Data Layouts
       """
       1,Perm Sec,,Transparency Office,06-1999,06-1999,British Telecom,,It's good to talk,0,Transparent.csv,1
       """
+
+  Scenario: Data has preamble at start of the file
+    Given a data file named "Transparent.csv" from the "Transparency Office" containing
+      """
+      This is unneccesary preamble
+      That nobody cares about, but may still look like lines. The data appears next.
+      Minister,Date,External Organisation,Reason
+      The PM,02 Jan 1995,British Telecom,It's good to talk
+      """
+    When the file is processed
+    Then the cleaned output should be
+      """
+      1,The PM,,Transparency Office,02-01-1995,02-01-1995,British Telecom,,It's good to talk,0,Transparent.csv,3
+      """
