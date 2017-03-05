@@ -95,3 +95,5 @@ src/elixir/data_sanitiser/processed_data.csv
 src/elixir/data_sanitiser/processed_data_original.csv
 
 src/elixir/data_sanitiser/data_sanitiser
+
+src/elixir/data_sanitiser/processed_data_original.csv.*

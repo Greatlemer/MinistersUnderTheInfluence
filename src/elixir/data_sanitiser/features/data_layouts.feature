@@ -99,3 +99,15 @@ Feature: Parse Data Layouts
       """
       1,The PM,,Transparency Office,02-01-1995,02-01-1995,British Telecom,,It's good to talk,0,Transparent.csv,3
       """
+
+  Scenario: Process Four Column, Oragnisation column headed as 'Name'
+    Given a data file named "Transparent.csv" from the "Transparency Office" containing
+      """
+      Special Advisers,Date,Name,Purpose of Meeting
+      SPAD1,June 2000,Jim Jameson,Advice
+      """
+    When the file is processed
+    Then the cleaned output should be
+      """
+      1,SPAD1,,Transparency Office,06-2000,06-2000,Jim Jameson,,Advice,0,Transparent.csv,1
+      """

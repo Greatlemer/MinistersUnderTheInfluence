@@ -29,7 +29,8 @@ defmodule DataSanitiser.FileProcessor do
     "date" => :date,
     "month" => :date,
     "reason" => :reason,
-    "purpose" => :reason
+    "purpose" => :reason,
+    "name" => :organisations
   }
 
   @processing_steps [
