@@ -135,14 +135,14 @@ defmodule DataSanitiser.TransparencyData do
     Structure for storing the data that can be extracted from a meeting entry.
     """
 
-    defstruct minister: :nil,
+    defstruct government_representative: :nil,
               start_date: %DateTuple{},
               end_date: %DateTuple{},
               organisations: :nil,
               reason: "",
               row: 0
     @type t :: %MeetingRow{
-      minister: String.t | :nil,
+      government_representative: String.t | :nil,
       start_date: DateTuple.t,
       end_date: DateTuple.t,
       organisations: [String.t] | :nil,
@@ -164,7 +164,7 @@ defmodule DataSanitiser.TransparencyData do
     def prepare_for_csv(organisation, row, data_file, row_index) do
       [
         row_index,
-        row.minister,
+        row.government_representative,
         "",
         data_file.department,
         row.start_date,
@@ -181,7 +181,7 @@ defmodule DataSanitiser.TransparencyData do
 
     @spec is_valid?(any) :: boolean
     def is_valid?(%MeetingRow{organisations: [""]}), do: false
-    def is_valid?(%MeetingRow{minister: :nil}), do: false
+    def is_valid?(%MeetingRow{government_representative: :nil}), do: false
     def is_valid?(%MeetingRow{start_date: start_date}) do
       DateTuple.is_valid? start_date
     end

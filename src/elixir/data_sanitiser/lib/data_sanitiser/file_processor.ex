@@ -23,11 +23,11 @@ defmodule DataSanitiser.FileProcessor do
   @header_types [
     {"appointing minister", :appointing_minister},
     {"organisation", :organisations},
-    {"minister", :minister},
-    {"spad", :minister},
-    {"special advisor", :minister},
-    {"special adviser", :minister},
-    {"permanent secretary", :minister},
+    {"minister", :government_representative},
+    {"spad", :government_representative},
+    {"special advisor", :government_representative},
+    {"special adviser", :government_representative},
+    {"permanent secretary", :government_representative},
     {"date", :date},
     {"month", :date},
     {"reason", :reason},
@@ -42,7 +42,7 @@ defmodule DataSanitiser.FileProcessor do
   ]
 
   @required_cols [
-    :minister,
+    :government_representative,
     :organisations,
     :reason
   ]
@@ -114,15 +114,15 @@ defmodule DataSanitiser.FileProcessor do
     @moduledoc """
     Struct to store info needed whilst processing data.
 
-    `previous_minister` represents the last minister name seen
+    `previous_government_representative` represents the last minister name seen
     `data_positions` are which columns represent which data field.
 
     This state should be generic enough that it can be used no matter what
     type of data file is being processed.
     """
-    defstruct previous_minister: :nil, data_positions: :nil
+    defstruct previous_government_representative: :nil, data_positions: :nil
     @type t :: %RowState{
-      previous_minister: String.t | :nil,
+      previous_government_representative: String.t | :nil,
       data_positions: [atom] | :nil
     }
   end
@@ -208,7 +208,7 @@ defmodule DataSanitiser.FileProcessor do
 
   defp clean_meeting_row({row, row_index}, row_state, file_metadata) do
     case fetch_meeting_values_from_row(row, row_state) do
-      %{minister: "", date: "", organisations: "", reason: ""} ->
+      %{government_representative: "", date: "", organisations: "", reason: ""} ->
         # Don't add anything to the stream if no data was put into any of the
         # columns
         {[], row_state}
@@ -217,7 +217,7 @@ defmodule DataSanitiser.FileProcessor do
         # so treat the row as if it were empty.
         {[], row_state}
       %{
-        minister: minister,
+        government_representative: minister,
         date: date,
         organisations: organisations,
         reason: reason
@@ -229,7 +229,7 @@ defmodule DataSanitiser.FileProcessor do
               |> parse_and_insert_date(date, file_metadata.year)
               |> parse_and_insert_reason(reason)
               |> parse_and_insert_organisations(organisations)
-        {[row], Map.put(row_state, :previous_minister, row.minister)}
+        {[row], Map.put(row_state, :previous_government_representative, row.government_representative)}
       _ ->
         if row_is_empty? row do
           # Don't add anything to the stream or state if the row is empty.
@@ -250,10 +250,10 @@ defmodule DataSanitiser.FileProcessor do
   defp meeting_data_positions_from_header({header_row, _}) do
     case Enum.map header_row, &(extract_column_type String.trim(&1)) do
       [:empty | tail] ->
-        if Enum.any?(tail, &(:minister == &1)) do
+        if Enum.any?(tail, &(:government_representative == &1)) do
           [:empty | tail]
         else
-          [:minister | tail]
+          [:government_representative | tail]
         end
       list ->
         list
@@ -308,20 +308,20 @@ defmodule DataSanitiser.FileProcessor do
           MeetingRow.t, String.t, RowState.t
         ) :: MeetingRow.t
   defp parse_and_insert_minister(
-         row, "", %RowState{previous_minister: minister}
+         row, "", %RowState{previous_government_representative: minister}
        ) do
     # If the current row has no minister value in it substitute in the last
     # one seen.
 
     minister
     |> clean_minister_name
-    |> put_into_map_at(row, :minister)
+    |> put_into_map_at(row, :government_representative)
   end
 
   defp parse_and_insert_minister(row, minister, _) do
     minister
     |> clean_minister_name
-    |> put_into_map_at(row, :minister)
+    |> put_into_map_at(row, :government_representative)
   end
 
 
