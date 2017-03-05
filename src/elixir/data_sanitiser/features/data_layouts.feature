@@ -124,3 +124,17 @@ Feature: Parse Data Layouts
       """
       1,Rt Hon Saw Someone,,Transparency Office,08-1999,08-1999,My mate,,Drinks,0,Transparent.csv,2
       """
+
+  Scenario: Process Five Column, Special advisor and their appointing minister
+    Given a data file named "Transparent.csv" from the "Transparency Office" containing
+      """
+      Appointing Minister,Name of Special Adviser,Date,Organisation,Purpose of Meeting
+      Rt Hon Delegator,Mr L. Ackey,12-07,Someone unimportant,Something boring
+      ,Mr L. Ackey,01-08,Another unimportant nobody,Something tedious
+      """
+    When the file is processed
+    Then the cleaned output should be
+      """
+      1,Mr L. Ackey,,Transparency Office,12-2007,12-2007,Someone unimportant,,Something boring,0,Transparent.csv,1
+      2,Mr L. Ackey,,Transparency Office,01-2008,01-2008,Another unimportant nobody,,Something tedious,0,Transparent.csv,2
+      """

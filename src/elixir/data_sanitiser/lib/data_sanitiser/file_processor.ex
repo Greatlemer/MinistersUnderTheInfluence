@@ -19,19 +19,21 @@ defmodule DataSanitiser.FileProcessor do
     trim_spaces_and_commas: 1
   ]
 
-  @header_types %{
-    "organisation" => :organisations,
-    "minister" => :minister,
-    "spad" => :minister,
-    "special advisor" => :minister,
-    "special adviser" => :minister,
-    "permanent secretary" => :minister,
-    "date" => :date,
-    "month" => :date,
-    "reason" => :reason,
-    "purpose" => :reason,
-    "name" => :organisations
-  }
+  # Order of this list matters as once a match is found it will be used.
+  @header_types [
+    {"appointing minister", :appointing_minister},
+    {"organisation", :organisations},
+    {"minister", :minister},
+    {"spad", :minister},
+    {"special advisor", :minister},
+    {"special adviser", :minister},
+    {"permanent secretary", :minister},
+    {"date", :date},
+    {"month", :date},
+    {"reason", :reason},
+    {"purpose", :reason},
+    {"name", :organisations}
+  ]
 
   @processing_steps [
     :check_file_exists,
@@ -263,15 +265,17 @@ defmodule DataSanitiser.FileProcessor do
   defp extract_column_type(""), do: :empty
 
   defp extract_column_type(header_value) do
-    do_extract_column_type(header_value, Map.keys(@header_types))
+    do_extract_column_type(header_value, @header_types)
   end
 
 
-  @spec do_extract_column_type(String.t, [String.t]) :: atom
+  @spec do_extract_column_type(String.t, [{String.t, atom}]) :: atom
   # No match found so return `:unknown`
   defp do_extract_column_type(_header_value, []), do: :unknown
 
-  defp do_extract_column_type(header_value, [type_key | remaining_types]) do
+  defp do_extract_column_type(
+      header_value, [{type_key, type_val} | remaining_types]
+  ) do
     # Check if the key at the head of the list is in the header string,
     # If so return the atom associated with that key, otherwise move on to the
     # next one.
@@ -279,7 +283,7 @@ defmodule DataSanitiser.FileProcessor do
                   |> String.downcase
                   |> String.contains?(type_key)
     if key_matches do
-      @header_types[type_key]
+      type_val
     else
       do_extract_column_type(header_value, remaining_types)
     end
