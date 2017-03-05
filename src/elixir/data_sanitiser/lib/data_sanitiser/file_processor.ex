@@ -210,6 +210,10 @@ defmodule DataSanitiser.FileProcessor do
         # Don't add anything to the stream if no data was put into any of the
         # columns
         {[], row_state}
+      %{date: "NIL"} ->
+        # A date of "NIL" means the minister had no meetings for that return
+        # so treat the row as if it were empty.
+        {[], row_state}
       %{
         minister: minister,
         date: date,

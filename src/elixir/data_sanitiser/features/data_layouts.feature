@@ -100,7 +100,7 @@ Feature: Parse Data Layouts
       1,The PM,,Transparency Office,02-01-1995,02-01-1995,British Telecom,,It's good to talk,0,Transparent.csv,3
       """
 
-  Scenario: Process Four Column, Oragnisation column headed as 'Name'
+  Scenario: Process Four Column, Organisation column headed as 'Name'
     Given a data file named "Transparent.csv" from the "Transparency Office" containing
       """
       Special Advisers,Date,Name,Purpose of Meeting
@@ -110,4 +110,17 @@ Feature: Parse Data Layouts
     Then the cleaned output should be
       """
       1,SPAD1,,Transparency Office,06-2000,06-2000,Jim Jameson,,Advice,0,Transparent.csv,1
+      """
+
+  Scenario: Process Four Column, NIL in the date column is equivalent to an empty row
+    Given a data file named "Transparent.csv" from the "Transparency Office" containing
+      """
+      Minister,Date,Organisation,Purpose of Meeting
+      Rt Hon No Meetings,NIL,,
+      Rt Hon Saw Someone, 08-99, My mate,Drinks
+      """
+    When the file is processed
+    Then the cleaned output should be
+      """
+      1,Rt Hon Saw Someone,,Transparency Office,08-1999,08-1999,My mate,,Drinks,0,Transparent.csv,2
       """
